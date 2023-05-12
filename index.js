@@ -1,8 +1,9 @@
 var express = require('express');
 var app = express();
 const PORT = process.env.PORT || 8000;
-app.get('/', (req, res)=>{
-    console.log(`request: ${req.originalUrl}`);
+app.post('/', (req, res)=>{
+    
+    console.log(`request: ${req.body}`);
     return res.status(200).json({
         test: "test"
     });
