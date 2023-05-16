@@ -1,5 +1,5 @@
-var express = require('express');
-var app = express();
+import express from "express";
+const app = express();
 app.use(express.json());
 const PORT = process.env.PORT || 8000;
 app.post('/', (req, res)=>{
