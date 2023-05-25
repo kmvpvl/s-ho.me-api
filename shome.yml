@@ -1,0 +1,121 @@
+openapi: '3.0.2'
+info:
+  title: S-HO.ME
+  version: '1.0'
+servers:
+  - url: https://s-ho-me-api.onrender.com
+    description: PROD server
+  - url: http://localhost:8000
+    description: Debug server
+
+components:
+  schemas:
+    createdorganizationinfo:
+      type: object
+      properties:
+        ogrganizationid:
+          type: string
+        admintoken:
+          type: string
+    devicereport:
+      type: object
+      required:
+        - devices
+      properties:
+        timestamp:
+          type: string
+        devices:
+          type: array
+          items: 
+            type: object
+            properties:
+              id:
+                description: Device id
+                type: string
+              value:
+                description: Value as a numeric value
+                type: number
+              strvalue:
+                description: value as a string, number with units usually
+                type: string
+              extra:
+                description: Extra data, for future use
+                type: object
+            required:
+              - id
+              - value
+  securitySchemes:
+    SHOMEAuthOrganizationId:
+      type: apiKey
+      in: header
+      name: shome_organizationid
+    SHOMEAuthToken:
+      type: apiKey
+      in: header
+      name: shome_authtoken
+  requestBodies:
+    createorganizationtoken:
+      content:
+        application/json:
+          schema:
+            type: object
+            #nullable: false
+            properties:
+              roles:
+                type: array
+                items:
+                  type: string
+    devicereport:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/devicereport"
+paths:
+  /version:
+    get:
+      operationId: version
+      description: Returns version of Application
+      security: []
+      responses:
+        '200':
+          description: OK
+  /createorganization:
+    post:
+      operationId: createorganization
+      security: []
+      description: Creates new organization. No authentication required 
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createdorganizationinfo" 
+          description: OK
+  /devicereport:
+    post:
+      operationId: devicereport
+      description: Processes report from device and returns actual parameters for device
+      requestBody:
+        $ref: "#/components/requestBodies/devicereport"
+      responses:
+        '200':
+          description: OK
+  /initcontroller:
+    post:
+      operationId: initcontroller
+      description: Initializes controller connection, send to controller actual parameters
+      responses:
+        '200':
+          description: OK
+  /createorganizationtoken:
+    post:
+      operationId: createorganizationtoken
+      description: Creates new organization token. Authentication required 
+      requestBody:
+        $ref: "#/components/requestBodies/createorganizationtoken"
+      responses:
+        '200':
+          description: OK
+security:
+  - SHOMEAuthOrganizationId: []
+    SHOMEAuthToken: []
