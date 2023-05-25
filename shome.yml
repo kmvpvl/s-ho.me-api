@@ -59,12 +59,17 @@ components:
         application/json:
           schema:
             type: object
-            #nullable: false
+            required:
+              - roles
             properties:
               roles:
                 type: array
                 items:
+                  minItems: 1
                   type: string
+                  enum:
+                    - admin
+                    - controller
     devicereport:
       content:
         application/json:
@@ -113,6 +118,14 @@ paths:
       description: Creates new organization token. Authentication required 
       requestBody:
         $ref: "#/components/requestBodies/createorganizationtoken"
+      responses:
+        '200':
+          description: OK
+  /controllerreport:
+    post:
+      operationId: controllerreport
+      description: 'Processes report from controller and returns actual parameters for controller'
+      parameters: []
       responses:
         '200':
           description: OK
