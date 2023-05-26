@@ -24,6 +24,7 @@ components:
       properties:
         timestamp:
           type: string
+          pattern: \d{4}-[0-1]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\+\d{4}
         devices:
           type: array
           items: 
@@ -44,6 +45,83 @@ components:
             required:
               - id
               - value
+    device:
+      type: object
+      required:
+        - ogrganizationid
+        - id
+        - name
+        - type
+        - hardware
+        - pin
+        - freqRead
+        - freqReport
+        - reportOnValueChanged
+        - location
+      properties:
+        _id:
+          type: string
+          pattern: ^[0-9a-fA-F]{24}$
+        ogrganizationid:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        units:
+          type: string
+        hardware:
+          type: string
+        pin: 
+          type: string
+        emulation:
+          type: string
+        freqRead:
+          type: number
+        freqReport:
+          type: number
+        threshold:
+          type: number
+        precision:
+          type: number
+        reportOnValueChanged:
+          type: boolean
+        reportOnInit:
+          type: boolean
+        location: 
+          type: object
+          required:
+            - layer
+          properties:
+            layer: 
+              type: string
+            x: 
+              type: number
+            y: 
+              type: number
+        ranges:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              color:
+                type: string
+              min: 
+                type: number
+              max:
+                type: number
+        created:
+          type: string
+          pattern: \d{4}-[0-1]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\+\d{4}
+        changed:
+          type: string
+          pattern: \d{4}-[0-1]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\+\d{4}
   securitySchemes:
     SHOMEAuthOrganizationId:
       type: apiKey
@@ -70,6 +148,11 @@ components:
                   enum:
                     - admin
                     - controller
+    initdevice:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/device"
     devicereport:
       content:
         application/json:
@@ -126,6 +209,15 @@ paths:
       operationId: controllerreport
       description: 'Processes report from controller and returns actual parameters for controller'
       parameters: []
+      responses:
+        '200':
+          description: OK
+  /initdevice:
+    post:
+      description: ''
+      operationId: initdevice
+      requestBody:
+        $ref: "#/components/requestBodies/initdevice"
       responses:
         '200':
           description: OK

@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const openapi_backend_1 = __importDefault(require("openapi-backend"));
-const devicereport_1 = __importDefault(require("./api/devicereport"));
-const initcontroller_1 = __importDefault(require("./api/initcontroller"));
+const device_1 = require("./api/device");
+const controller_1 = __importDefault(require("./api/controller"));
 const organization_1 = __importDefault(require("./model/organization"));
 const organization_2 = require("./api/organization");
 const cors_1 = __importDefault(require("cors"));
@@ -35,8 +35,8 @@ function checkSecurity(c) {
 }
 api.register({
     version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: process.env.npm_package_version }); }),
-    devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, devicereport_1.default)(c, req, res, org, roles); }),
-    initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, initcontroller_1.default)(c, req, res, org, roles); }),
+    devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.devicereport)(c, req, res, org, roles); }),
+    initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, controller_1.default)(c, req, res, org, roles); }),
     createorganizationtoken: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, organization_2.createOrganizationToken)(c, req, res, org, roles); }),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(400).json({ err: c.validation.errors }); }),

@@ -1,7 +1,7 @@
 import express from "express";
 import OpenAPIBackend from "openapi-backend";
-import devicereport from "./api/devicereport";
-import initcontroller from "./api/initcontroller";
+import { devicereport } from "./api/device";
+import initcontroller from "./api/controller";
 import Organization from "./model/organization";
 import { UUID } from "crypto";
 import { createOrganizationToken } from "./api/organization";

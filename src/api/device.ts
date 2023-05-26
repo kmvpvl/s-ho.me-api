@@ -5,8 +5,15 @@ import Organization, { SHOMERoles } from '../model/organization';
 import { Types } from 'mongoose';
 import SHOMEError from '../model/error';
 
-export default async function devicereport(context: Context, req:Request, res: Response, org: Organization, roles: SHOMERoles[]) {
+export async function devicereport(context: Context, req:Request, res: Response, org: Organization, roles: SHOMERoles[]) {
     console.log(`Device report data = '${JSON.stringify(context.request.body)}'`);
+    return res.status(200).json({
+        status: "OK"
+    });
+} 
+
+export async function initdevice(context: Context, req:Request, res: Response, org: Organization, roles: SHOMERoles[]) {
+    console.log(`Init device data = '${JSON.stringify(context.request.body)}'`);
     return res.status(200).json({
         status: "OK"
     });
