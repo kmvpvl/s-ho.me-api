@@ -48,7 +48,7 @@ components:
     device:
       type: object
       required:
-        - ogrganizationid
+        - organizationid
         - id
         - name
         - type
@@ -62,7 +62,7 @@ components:
         _id:
           type: string
           pattern: ^[0-9a-fA-F]{24}$
-        ogrganizationid:
+        organizationid:
           type: string
         id:
           type: string
@@ -75,9 +75,9 @@ components:
         hardware:
           type: string
         pin: 
-          type: string
+          type: number
         emulation:
-          type: string
+          type: boolean
         freqRead:
           type: number
         freqReport:
@@ -148,11 +148,13 @@ components:
                   enum:
                     - admin
                     - controller
-    initdevice:
+    initdevices:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/device"
+            type: array
+            items:
+              $ref: "#/components/schemas/device"
     devicereport:
       content:
         application/json:
@@ -212,12 +214,12 @@ paths:
       responses:
         '200':
           description: OK
-  /initdevice:
+  /initdevices:
     post:
       description: ''
-      operationId: initdevice
+      operationId: initdevices
       requestBody:
-        $ref: "#/components/requestBodies/initdevice"
+        $ref: "#/components/requestBodies/initdevices"
       responses:
         '200':
           description: OK
