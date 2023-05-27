@@ -1,6 +1,6 @@
 import express from "express";
 import OpenAPIBackend from "openapi-backend";
-import { devicereport } from "./api/device";
+import { devicereport, initdevices } from "./api/device";
 import initcontroller from "./api/controller";
 import Organization from "./model/organization";
 import { UUID } from "crypto";
@@ -27,6 +27,7 @@ api.register({
     version:    async (c, req, res, org, roles) => {return res.status(200).json({version: process.env.npm_package_version})},
     devicereport: async (c, req, res, org, roles) => await devicereport(c, req, res, org, roles),
     initcontroller: async (c, req, res, org, roles) => await initcontroller(c, req, res, org, roles),
+    initdevices: async (c, req, res, org, roles) => await initdevices(c, req, res, org, roles),
     createorganizationtoken: async (c, req, res, org, roles) => await createOrganizationToken(c, req, res, org, roles),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: async (c, req, res, org, roles) => res.status(400).json({ err: c.validation.errors }),

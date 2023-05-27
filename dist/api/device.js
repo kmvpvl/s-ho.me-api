@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initdevice = exports.devicereport = void 0;
+exports.initdevices = exports.devicereport = void 0;
 function devicereport(context, req, res, org, roles) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`Device report data = '${JSON.stringify(context.request.body)}'`);
@@ -19,12 +19,12 @@ function devicereport(context, req, res, org, roles) {
     });
 }
 exports.devicereport = devicereport;
-function initdevice(context, req, res, org, roles) {
+function initdevices(context, req, res, org, roles) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`Init device data = '${JSON.stringify(context.request.body)}'`);
+        console.log(`Init devices data = '${JSON.stringify(context.request.body)}'`);
         return res.status(200).json({
             status: "OK"
         });
     });
 }
-exports.initdevice = initdevice;
+exports.initdevices = initdevices;

@@ -37,6 +37,7 @@ api.register({
     version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: process.env.npm_package_version }); }),
     devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.devicereport)(c, req, res, org, roles); }),
     initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, controller_1.default)(c, req, res, org, roles); }),
+    initdevices: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.initdevices)(c, req, res, org, roles); }),
     createorganizationtoken: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, organization_2.createOrganizationToken)(c, req, res, org, roles); }),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(400).json({ err: c.validation.errors }); }),

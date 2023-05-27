@@ -12,8 +12,8 @@ export async function devicereport(context: Context, req:Request, res: Response,
     });
 } 
 
-export async function initdevice(context: Context, req:Request, res: Response, org: Organization, roles: SHOMERoles[]) {
-    console.log(`Init device data = '${JSON.stringify(context.request.body)}'`);
+export async function initdevices(context: Context, req:Request, res: Response, org: Organization, roles: SHOMERoles[]) {
+    console.log(`Init devices data = '${JSON.stringify(context.request.body)}'`);
     return res.status(200).json({
         status: "OK"
     });
