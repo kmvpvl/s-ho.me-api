@@ -78,5 +78,15 @@ class Device extends mongoproto_1.default {
             throw new error_1.default("device:notfound", `id='${name}'`);
         });
     }
+    static createDevice(device) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const d = Device.getDeviceByName(device.id);
+            if (d)
+                return d;
+            const newD = new Device(undefined, device);
+            yield newD.save();
+            return newD;
+        });
+    }
 }
 exports.Device = Device;

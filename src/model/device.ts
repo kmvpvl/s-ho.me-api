@@ -107,4 +107,11 @@ export class Device extends MongoProto<IDevice> {
         if (d.length === 1) return d[0];
         throw new SHOMEError("device:notfound", `id='${name}'`);
     }
+    public static async createDevice(device: IDevice): Promise<Device> {
+        const d = Device.getDeviceByName(device.id);
+        if (d) return d;
+        const newD = new Device(undefined, device);
+        await newD.save();
+        return newD;
+    }
 }
