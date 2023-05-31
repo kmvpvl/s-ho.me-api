@@ -5,22 +5,24 @@ import SHOMEError from "./error";
 export interface IDeviceReport {
     _id?: Types.ObjectId;
     created: Date;
+    timestamp: Date;
     ip: string;
     value: number;
     strvalue: string;
     extra?: object;
     organizationid: string;    
-    deviceid: string;
+    id: string;
 }
 
 export const DeviceReportSchema = new Schema({
     created: {type: Date, required: true},
+    timestamp: {type: Date, required: true},
     ip: {type: String, required: false},
     value: {type: Number, required: true},
     strvalue: {type: String, required: false},
     extra: {type: Object, required: false},
     organizationid: {type: String, required: true},
-    deviceid: {type: String, required: true}
+    id: {type: String, required: true}
 });
 
 const DeviceLocationSchema = new Schema({
@@ -61,7 +63,7 @@ const mongoDevices = model<IDevice>('devices', DeviceSchema);
 
 export interface IDevice {
     _id?: Types.ObjectId;
-    organizationid?: string;
+    organizationid: string;
     id: string;
     name: string;
     type: string;
@@ -100,15 +102,14 @@ export class Device extends MongoProto<IDevice> {
     constructor(id?: Types.ObjectId, data?: IDevice) {
         super(mongoDevices, id, data);
     }
-    public static async getDeviceByName(name: string): Promise<Device> {
+    public static async getByName(orgid: string, name: string): Promise<Device | undefined> {
         const d = await mongoDevices.aggregate([
-            {$match: {id: name}}
+            {$match: {id: name, organizationid: orgid}}
         ]);
-        if (d.length === 1) return d[0];
-        throw new SHOMEError("device:notfound", `id='${name}'`);
+        if (d.length === 1) return new Device(undefined, d[0]);
     }
     public static async createDevice(device: IDevice): Promise<Device> {
-        const d = Device.getDeviceByName(device.id);
+        const d = await Device.getByName(device.organizationid as string, device.id);
         if (d) return d;
         const newD = new Device(undefined, device);
         await newD.save();

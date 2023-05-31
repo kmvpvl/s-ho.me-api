@@ -3,7 +3,7 @@ import MongoProto from "./mongoproto";
 
 export interface IController {
     _id?: Types.ObjectId;
-    organizationid?: string;
+    organizationid: string;
     name: string; 
     description: string; 
     autoupdate: {
@@ -18,13 +18,11 @@ export interface IController {
     logs?: object;
     layers?: [{
         sortNumber: number;
-        bgImage: string;
+        bgImage?: string;
         id: string;
         name: string;
     }];
-    rules?:{
-
-    }
+    rules?:[]
 }
 
 const ControllerAutoUpdateSchema = new Schema({
@@ -57,5 +55,20 @@ const mongoControllers = model<IController>('controllers', ControllerSchema);
 export default class Controller extends MongoProto<IController> {
     constructor (id?: Types.ObjectId, data?: IController) {
         super(mongoControllers, id, data);
+    }
+    public static async getByName(orgid: string, name: string): Promise<Controller | undefined> {
+        const c = await mongoControllers.aggregate([
+            {"$match": {
+                name: name
+            }}
+        ]);
+        if (c.length === 1) return new Controller(undefined, c[0]);
+    }
+    public static async createController(ctrl: IController): Promise<Controller> {
+        const c = await Controller.getByName(ctrl.organizationid, ctrl.name);
+        if (c) return c;
+        const newC = new Controller(undefined, ctrl);
+        await newC.save();
+        return newC;
     }
 }

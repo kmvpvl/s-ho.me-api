@@ -82,4 +82,11 @@ export default class Organization extends MongoProto<IOrganization> {
         await this.save();
         return token;
     }
+
+    public static hasRole(rolesToSearch: SHOMERoles, rolesAssigned: Array<SHOMERoles>): boolean {
+        // implementing 'admin has any role'
+        if (rolesAssigned.includes("admin")) return true;
+
+        return  rolesAssigned.includes(rolesToSearch);
+    }
 }

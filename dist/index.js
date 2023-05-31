@@ -20,6 +20,7 @@ const organization_1 = __importDefault(require("./model/organization"));
 const organization_2 = require("./api/organization");
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
+const error_1 = __importDefault(require("./model/error"));
 const api = new openapi_backend_1.default({
     definition: 'shome.yml'
 });
@@ -82,8 +83,22 @@ app.use((req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }, req, res, org === null || org === void 0 ? void 0 : org.organization, org === null || org === void 0 ? void 0 : org.roles);
     }
     catch (e) {
-        return res.status(500).json({ code: "Wrong parameters", description: `Request ${req.url} - ${e.message}` });
-        console.log(`🚫 Request ${req.url} - ${e.message}`);
+        if (e instanceof error_1.default) {
+            switch (e.code) {
+                case "forbidden:roleexpected": return res.status(403).json({
+                    code: e.code,
+                    message: e.message
+                });
+                default: return res.status(400).json({
+                    code: e.code,
+                    message: e.message
+                });
+            }
+        }
+        else {
+            return res.status(500).json({ code: "Wrong parameters", description: `Request ${req.url} - ${e.message}` });
+            console.log(`🚫 Request ${req.url} - ${e.message}`);
+        }
     }
 }));
 app.listen(PORT, () => console.log(`✅ Now listening on port ${PORT}`));
