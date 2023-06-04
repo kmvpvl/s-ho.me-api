@@ -15,15 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Device = exports.DeviceReport = exports.DeviceSchema = exports.DeviceReportSchema = void 0;
 const mongoose_1 = require("mongoose");
 const mongoproto_1 = __importDefault(require("./mongoproto"));
-const error_1 = __importDefault(require("./error"));
 exports.DeviceReportSchema = new mongoose_1.Schema({
     created: { type: Date, required: true },
+    timestamp: { type: Date, required: true },
     ip: { type: String, required: false },
     value: { type: Number, required: true },
     strvalue: { type: String, required: false },
     extra: { type: Object, required: false },
     organizationid: { type: String, required: true },
-    deviceid: { type: String, required: true }
+    id: { type: String, required: true }
 });
 const DeviceLocationSchema = new mongoose_1.Schema({
     layer: { type: String, required: true },
@@ -68,14 +68,23 @@ class Device extends mongoproto_1.default {
     constructor(id, data) {
         super(mongoDevices, id, data);
     }
-    static getDeviceByName(name) {
+    static getByName(orgid, name) {
         return __awaiter(this, void 0, void 0, function* () {
             const d = yield mongoDevices.aggregate([
-                { $match: { id: name } }
+                { $match: { id: name, organizationid: orgid } }
             ]);
             if (d.length === 1)
-                return d[0];
-            throw new error_1.default("device:notfound", `id='${name}'`);
+                return new Device(undefined, d[0]);
+        });
+    }
+    static createDevice(device) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const d = yield Device.getByName(device.organizationid, device.id);
+            if (d)
+                return d;
+            const newD = new Device(undefined, device);
+            yield newD.save();
+            return newD;
         });
     }
 }

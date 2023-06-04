@@ -8,13 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const organization_1 = __importDefault(require("../model/organization"));
+const controller_1 = __importDefault(require("../model/controller"));
+const error_1 = __importDefault(require("../model/error"));
 function initcontroller(context, req, res, org, roles) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`controller settings: client='${req.headers["shome_auth"]}'; body='${JSON.stringify(req.body)}'`);
-        return res.status(200).json({
-            controller: "OK"
-        });
+        console.log(`Trying to init controoller: body='${JSON.stringify(req.body)}'`);
+        if (!organization_1.default.hasRole('controller', roles))
+            throw new error_1.default("forbidden:roleexpected", `Role 'controller' was expected`);
+        const ic = req.body;
+        ic.organizationid = (_a = org.json) === null || _a === void 0 ? void 0 : _a.id;
+        const c = yield controller_1.default.createController(ic);
+        return res.status(200).json(c.json);
     });
 }
 exports.default = initcontroller;

@@ -7,6 +7,7 @@ import { UUID } from "crypto";
 import { createOrganizationToken } from "./api/organization";
 import cors from 'cors';
 import morgan from "morgan";
+import SHOMEError from "./model/error";
 
 const api = new OpenAPIBackend({ 
     definition: 'shome.yml'
@@ -73,9 +74,23 @@ app.use(async (req, res) => {
                 'shome_authtoken': authtoken
             }
         }, req, res, org?.organization, org?.roles);
-    } catch (e) {
-        return res.status(500).json({code: "Wrong parameters", description: `Request ${req.url} - ${(e as Error).message}`});
-        console.log(`🚫 Request ${req.url} - ${(e as Error).message}`);
+    } 
+    catch (e) {
+        if (e instanceof SHOMEError) {
+            switch ((e as SHOMEError).code) {
+                case "forbidden:roleexpected": return res.status(403).json({
+                    code: (e as SHOMEError).code,
+                    message: e.message
+                });
+                default: return res.status(400).json({
+                    code: (e as SHOMEError).code,
+                    message: e.message
+                });
+            }
+        } else {
+            return res.status(500).json({code: "Wrong parameters", description: `Request ${req.url} - ${(e as Error).message}`});
+            console.log(`🚫 Request ${req.url} - ${(e as Error).message}`);
+        }
     }
 });
 

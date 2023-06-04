@@ -86,5 +86,11 @@ class Organization extends mongoproto_1.default {
             return token;
         });
     }
+    static hasRole(rolesToSearch, rolesAssigned) {
+        // implementing 'admin has any role'
+        if (rolesAssigned.includes("admin"))
+            return true;
+        return rolesAssigned.includes(rolesToSearch);
+    }
 }
 exports.default = Organization;
