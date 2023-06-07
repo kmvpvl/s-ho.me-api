@@ -21,6 +21,7 @@ const organization_2 = require("./api/organization");
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const error_1 = __importDefault(require("./model/error"));
+var npm_package_version = require('../package.json').version;
 const api = new openapi_backend_1.default({
     definition: 'shome.yml'
 });
@@ -35,7 +36,7 @@ function checkSecurity(c) {
     }
 }
 api.register({
-    version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: process.env.npm_package_version }); }),
+    version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: npm_package_version }); }),
     devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.devicereport)(c, req, res, org, roles); }),
     initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, controller_1.default)(c, req, res, org, roles); }),
     initdevices: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.initdevices)(c, req, res, org, roles); }),

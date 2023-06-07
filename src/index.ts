@@ -8,6 +8,7 @@ import { createOrganizationToken } from "./api/organization";
 import cors from 'cors';
 import morgan from "morgan";
 import SHOMEError from "./model/error";
+var npm_package_version = require('../package.json').version;
 
 const api = new OpenAPIBackend({ 
     definition: 'shome.yml'
@@ -25,7 +26,7 @@ function checkSecurity(c: any): boolean {
 }
 
 api.register({
-    version:    async (c, req, res, org, roles) => {return res.status(200).json({version: process.env.npm_package_version})},
+    version:    async (c, req, res, org, roles) => {return res.status(200).json({version: npm_package_version})},
     devicereport: async (c, req, res, org, roles) => await devicereport(c, req, res, org, roles),
     initcontroller: async (c, req, res, org, roles) => await initcontroller(c, req, res, org, roles),
     initdevices: async (c, req, res, org, roles) => await initdevices(c, req, res, org, roles),
