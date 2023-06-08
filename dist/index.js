@@ -14,12 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const openapi_backend_1 = __importDefault(require("openapi-backend"));
-const devicereport_1 = __importDefault(require("./api/devicereport"));
-const initcontroller_1 = __importDefault(require("./api/initcontroller"));
+const device_1 = require("./api/device");
+const controller_1 = __importDefault(require("./api/controller"));
 const organization_1 = __importDefault(require("./model/organization"));
 const organization_2 = require("./api/organization");
 const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
+const error_1 = __importDefault(require("./model/error"));
+var npm_package_version = require('../package.json').version;
 const api = new openapi_backend_1.default({
     definition: 'shome.yml'
 });
@@ -34,9 +36,10 @@ function checkSecurity(c) {
     }
 }
 api.register({
-    version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: process.env.npm_package_version }); }),
-    devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, devicereport_1.default)(c, req, res, org, roles); }),
-    initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, initcontroller_1.default)(c, req, res, org, roles); }),
+    version: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json({ version: npm_package_version }); }),
+    devicereport: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.devicereport)(c, req, res, org, roles); }),
+    initcontroller: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, controller_1.default)(c, req, res, org, roles); }),
+    initdevices: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, device_1.initdevices)(c, req, res, org, roles); }),
     createorganizationtoken: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, organization_2.createOrganizationToken)(c, req, res, org, roles); }),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: (c, req, res, org, roles) => __awaiter(void 0, void 0, void 0, function* () { return res.status(400).json({ err: c.validation.errors }); }),
@@ -81,8 +84,22 @@ app.use((req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }, req, res, org === null || org === void 0 ? void 0 : org.organization, org === null || org === void 0 ? void 0 : org.roles);
     }
     catch (e) {
-        return res.status(500).json({ code: "Wrong parameters", description: `Request ${req.url} - ${e.message}` });
-        console.log(`🚫 Request ${req.url} - ${e.message}`);
+        if (e instanceof error_1.default) {
+            switch (e.code) {
+                case "forbidden:roleexpected": return res.status(403).json({
+                    code: e.code,
+                    message: e.message
+                });
+                default: return res.status(400).json({
+                    code: e.code,
+                    message: e.message
+                });
+            }
+        }
+        else {
+            return res.status(500).json({ code: "Wrong parameters", description: `Request ${req.url} - ${e.message}` });
+            console.log(`🚫 Request ${req.url} - ${e.message}`);
+        }
     }
 }));
 app.listen(PORT, () => console.log(`✅ Now listening on port ${PORT}`));

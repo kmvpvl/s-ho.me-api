@@ -24,6 +24,7 @@ components:
       properties:
         timestamp:
           type: string
+          pattern: ^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)
         devices:
           type: array
           items: 
@@ -44,6 +45,136 @@ components:
             required:
               - id
               - value
+    device:
+      type: object
+      required:
+        - organizationid
+        - id
+        - name
+        - type
+        - hardware
+        - pin
+        - freqRead
+        - freqReport
+        - reportOnValueChanged
+        - location
+      properties:
+        _id:
+          type: string
+          pattern: ^[0-9a-fA-F]{24}$
+        organizationid:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        units:
+          type: string
+        hardware:
+          type: string
+        pin: 
+          type: number
+        emulation:
+          type: boolean
+        freqRead:
+          type: number
+        freqReport:
+          type: number
+        threshold:
+          type: number
+        precision:
+          type: number
+        reportOnValueChanged:
+          type: boolean
+        reportOnInit:
+          type: boolean
+        location: 
+          type: object
+          required:
+            - layer
+          properties:
+            layer: 
+              type: string
+            x: 
+              type: number
+            y: 
+              type: number
+        ranges:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              color:
+                type: string
+              min: 
+                type: number
+              max:
+                type: number
+        created:
+          type: string
+          pattern: ^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)
+        changed:
+          type: string
+          pattern: ^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)
+    controller:
+      type: object
+      required:
+        - name
+        - description
+        - autoupdate
+      properties:
+        _id:
+          type: string
+        organizationid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        autoupdate:
+          type: object
+          required:
+            - auto
+          properties:
+            auto: 
+              type: boolean
+            repo: 
+              type: string
+            branch:
+              type: string
+        location:
+          type: object
+        buffer: 
+          type: object
+        logs:
+          type: object
+        layers:
+          type: array
+          items:
+            type: object
+            required:
+              - sortNumber
+              - id
+              - name
+            properties:
+              sortNumber:
+                type: number
+              bgImage:
+                type: string
+              id:
+                type: string
+              name:
+                type: string
+        rules:
+          type: array
+          items:
+            type: object
   securitySchemes:
     SHOMEAuthOrganizationId:
       type: apiKey
@@ -59,12 +190,24 @@ components:
         application/json:
           schema:
             type: object
-            #nullable: false
+            required:
+              - roles
             properties:
               roles:
                 type: array
                 items:
+                  minItems: 1
                   type: string
+                  enum:
+                    - admin
+                    - controller
+    initdevices:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/device"
     devicereport:
       content:
         application/json:
@@ -113,6 +256,23 @@ paths:
       description: Creates new organization token. Authentication required 
       requestBody:
         $ref: "#/components/requestBodies/createorganizationtoken"
+      responses:
+        '200':
+          description: OK
+  /controllerreport:
+    post:
+      operationId: controllerreport
+      description: 'Processes report from controller and returns actual parameters for controller'
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /initdevices:
+    post:
+      description: ''
+      operationId: initdevices
+      requestBody:
+        $ref: "#/components/requestBodies/initdevices"
       responses:
         '200':
           description: OK

@@ -1,12 +1,14 @@
 import express from "express";
 import OpenAPIBackend from "openapi-backend";
-import devicereport from "./api/devicereport";
-import initcontroller from "./api/initcontroller";
+import { devicereport, initdevices } from "./api/device";
+import initcontroller from "./api/controller";
 import Organization from "./model/organization";
 import { UUID } from "crypto";
 import { createOrganizationToken } from "./api/organization";
 import cors from 'cors';
 import morgan from "morgan";
+import SHOMEError from "./model/error";
+var npm_package_version = require('../package.json').version;
 
 const api = new OpenAPIBackend({ 
     definition: 'shome.yml'
@@ -24,9 +26,10 @@ function checkSecurity(c: any): boolean {
 }
 
 api.register({
-    version:    async (c, req, res, org, roles) => {return res.status(200).json({version: process.env.npm_package_version})},
+    version:    async (c, req, res, org, roles) => {return res.status(200).json({version: npm_package_version})},
     devicereport: async (c, req, res, org, roles) => await devicereport(c, req, res, org, roles),
     initcontroller: async (c, req, res, org, roles) => await initcontroller(c, req, res, org, roles),
+    initdevices: async (c, req, res, org, roles) => await initdevices(c, req, res, org, roles),
     createorganizationtoken: async (c, req, res, org, roles) => await createOrganizationToken(c, req, res, org, roles),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: async (c, req, res, org, roles) => res.status(400).json({ err: c.validation.errors }),
@@ -72,9 +75,23 @@ app.use(async (req, res) => {
                 'shome_authtoken': authtoken
             }
         }, req, res, org?.organization, org?.roles);
-    } catch (e) {
-        return res.status(500).json({code: "Wrong parameters", description: `Request ${req.url} - ${(e as Error).message}`});
-        console.log(`🚫 Request ${req.url} - ${(e as Error).message}`);
+    } 
+    catch (e) {
+        if (e instanceof SHOMEError) {
+            switch ((e as SHOMEError).code) {
+                case "forbidden:roleexpected": return res.status(403).json({
+                    code: (e as SHOMEError).code,
+                    message: e.message
+                });
+                default: return res.status(400).json({
+                    code: (e as SHOMEError).code,
+                    message: e.message
+                });
+            }
+        } else {
+            return res.status(500).json({code: "Wrong parameters", description: `Request ${req.url} - ${(e as Error).message}`});
+            console.log(`🚫 Request ${req.url} - ${(e as Error).message}`);
+        }
     }
 });
 
