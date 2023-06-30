@@ -4,7 +4,7 @@ import { devicereport, initdevices } from "./api/device";
 import initcontroller from "./api/controller";
 import Organization from "./model/organization";
 import { UUID } from "crypto";
-import { createOrganizationToken } from "./api/organization";
+import { createOrganizationToken, getlastvalues, organizationinfo } from "./api/organization";
 import cors from 'cors';
 import morgan from "morgan";
 import SHOMEError from "./model/error";
@@ -16,21 +16,14 @@ const api = new OpenAPIBackend({
 
 api.init();
 
-function checkSecurity(c: any): boolean {
-    try{
-        //const user = new User(c.request);
-        return true; 
-    } catch(e){
-        return false;
-    }
-}
-
 api.register({
     version:    async (c, req, res, org, roles) => {return res.status(200).json({version: npm_package_version})},
     devicereport: async (c, req, res, org, roles) => await devicereport(c, req, res, org, roles),
     initcontroller: async (c, req, res, org, roles) => await initcontroller(c, req, res, org, roles),
     initdevices: async (c, req, res, org, roles) => await initdevices(c, req, res, org, roles),
     createorganizationtoken: async (c, req, res, org, roles) => await createOrganizationToken(c, req, res, org, roles),
+    organizationinfo: async (c, req, res, org, roles) => await organizationinfo(c, req, res, org, roles),
+    getlastvalues: async (c, req, res, org, roles) => await getlastvalues(c, req, res, org, roles),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
     validationFail: async (c, req, res, org, roles) => res.status(400).json({ err: c.validation.errors }),
     notFound: async (c, req, res, org, roles) => res.status(404).json({c}),
@@ -41,7 +34,7 @@ api.registerSecurityHandler('SHOMEAuthOrganizationId', async (context, req, res,
     return org !== undefined;
 });
 
-api.registerSecurityHandler('SHOMEAuthToken',  (context, req, res)=> {
+api.registerSecurityHandler('SHOMEAuthToken',  (context, req, res, org)=> {
     return true;
 });
 

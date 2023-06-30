@@ -4,6 +4,7 @@ import { UUID } from "crypto";
 import { Md5 } from "ts-md5";
 import SHOMEError from "./error";
 import { v4 } from "uuid";
+import { IDevice, mongoDevices } from "./device";
 
 export type SHOMERoles = "admin" | "controller";
 
@@ -88,5 +89,60 @@ export default class Organization extends MongoProto<IOrganization> {
         if (rolesAssigned.includes("admin")) return true;
 
         return  rolesAssigned.includes(rolesToSearch);
+    }
+    public async devices(): Promise<IDevice[]> {
+        const d = await mongoDevices.aggregate([{
+            $match: {"organizationid": this.data?.id}
+        }]);
+        return d;
+    }
+
+    public async devicesWithLastValues(deviceListIds: string[]): Promise<IDevice[]>  {
+        const d = await mongoDevices.aggregate([
+            {
+              '$match': {
+                'id': {
+                  '$in': deviceListIds
+                }, 
+                'organizationid': this.data?.id
+              }
+            }, {
+              '$lookup': {
+                'from': 'devicereports', 
+                'localField': 'id', 
+                'foreignField': 'id', 
+                'pipeline': [
+                  {
+                    '$group': {
+                      '_id': '$id', 
+                      'value': {
+                        '$last': '$value'
+                      }, 
+                      'value_str': {
+                        '$last': '$value_str'
+                      },
+                      'timestamp': {
+                        '$last': '$timestamp'
+                      }
+                    }
+                  }
+                ], 
+                'as': 'result'
+              }
+            }, {
+              '$project': {
+                'result._id': 0
+              }
+            }, {
+              '$unwind': '$result'
+            }, {
+              '$addFields': {
+                'value': '$result.value',
+                'value_str': '$result.value_str',
+                'timestamp': '$result.timestamp'
+              }
+            }
+          ]);
+        return d;
     }
 }

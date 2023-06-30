@@ -59,7 +59,7 @@ export const DeviceSchema = new Schema({
 });
 
 const mongoDeviceReport = model<IDeviceReport>('devicereports', DeviceReportSchema);
-const mongoDevices = model<IDevice>('devices', DeviceSchema);
+export const mongoDevices = model<IDevice>('devices', DeviceSchema);
 
 export interface IDevice {
     _id?: Types.ObjectId;

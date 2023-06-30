@@ -234,6 +234,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/createdorganizationinfo" 
           description: OK
+  /organizationinfo:
+    post:
+      operationId: organizationinfo
+      description: Returns all information of organization
+      responses:
+        '200':
+          description: OK
+  /getlastvalues:
+    post:
+      operationId: getlastvalues
+      description: Returns all information of devices and them last values
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items: 
+                type: string
+      responses:
+        '200':
+          description: OK
   /devicereport:
     post:
       operationId: devicereport
