@@ -1,5 +1,6 @@
 import mongoose, { Model, Types, connect } from "mongoose";
 import settings from "./settings";
+if (settings)
 
 type MongoErrorCode = "settings:mongouriundefined" 
 | "mongo:connect" 
@@ -44,7 +45,7 @@ export default class MongoProto<T> {
         return this.id;
     }
     public static connectMongo(){
-        let uri = settings.mongouri;
+        let uri = process.env.mongouri as string;
         mongoose.set('strictQuery', false);
         connect(uri)
         .catch((err)=>{

@@ -185,6 +185,18 @@ components:
       in: header
       name: shome_authtoken
   requestBodies:
+    updateorganization:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              modes:
+                type: array
+              rules:
+                type: array
     createorganizationtoken:
       content:
         application/json:
@@ -233,6 +245,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/createdorganizationinfo" 
+          description: OK
+  /changemode:
+    post:
+      operationId: changemode
+      description: Changes current mode of organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /updateorganization:
+    post:
+      operationId: updateorganization
+      description: Updates rules and modes. Needs Admin role
+      requestBody:
+        $ref: "#/components/requestBodies/updateorganization"
+      responses:
+        '200':
           description: OK
   /organizationinfo:
     post:

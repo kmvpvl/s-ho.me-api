@@ -4,10 +4,11 @@ import { devicereport, initdevices } from "./api/device";
 import initcontroller from "./api/controller";
 import Organization from "./model/organization";
 import { UUID } from "crypto";
-import { createOrganizationToken, getlastvalues, organizationinfo } from "./api/organization";
+import { changemode, createOrganizationToken, getlastvalues, organizationinfo, updateorganization } from "./api/organization";
 import cors from 'cors';
 import morgan from "morgan";
 import SHOMEError from "./model/error";
+import { Telegram, Telegraf, TelegramError, Context } from "telegraf";
 var npm_package_version = require('../package.json').version;
 
 const api = new OpenAPIBackend({ 
@@ -17,11 +18,13 @@ const api = new OpenAPIBackend({
 api.init();
 
 api.register({
-    version:    async (c, req, res, org, roles) => {return res.status(200).json({version: npm_package_version})},
-    devicereport: async (c, req, res, org, roles) => await devicereport(c, req, res, org, roles),
+    version:  async (c, req, res, org, roles) => {return res.status(200).json({version: npm_package_version})},
+    devicereport: async (c, req, res, org, roles, bot) => await devicereport(c, req, res, org, roles, bot),
     initcontroller: async (c, req, res, org, roles) => await initcontroller(c, req, res, org, roles),
     initdevices: async (c, req, res, org, roles) => await initdevices(c, req, res, org, roles),
     createorganizationtoken: async (c, req, res, org, roles) => await createOrganizationToken(c, req, res, org, roles),
+    updateorganization: async (c, req, res, org, roles) => await updateorganization(c, req, res, org, roles),
+    changemode: async (c, req, res, org, roles, bot) => await changemode(c, req, res, org, roles, bot),
     organizationinfo: async (c, req, res, org, roles) => await organizationinfo(c, req, res, org, roles),
     getlastvalues: async (c, req, res, org, roles) => await getlastvalues(c, req, res, org, roles),
     //controllerreport: async (c, req, res, org, roles) => await controllerreport(c, req, res),
@@ -45,6 +48,12 @@ app.use(cors());
 
 const PORT = process.env.PORT || 8000;
 
+let tgBot: Telegraf;
+
+if (process.env.tgToken) {
+    tgBot = new Telegraf<Context>(process.env.tgToken);
+}
+
 app.use(async (req, res) => {
     let org;
     const organizationid = req.headers['shome_organizationid'] as string;
@@ -67,19 +76,13 @@ app.use(async (req, res) => {
                 'shome_organizationid': organizationid,
                 'shome_authtoken': authtoken
             }
-        }, req, res, org?.organization, org?.roles);
+        }, req, res, org?.organization, org?.roles, tgBot);
     } 
     catch (e) {
         if (e instanceof SHOMEError) {
-            switch ((e as SHOMEError).code) {
-                case "forbidden:roleexpected": return res.status(403).json({
-                    code: (e as SHOMEError).code,
-                    message: e.message
-                });
-                default: return res.status(400).json({
-                    code: (e as SHOMEError).code,
-                    message: e.message
-                });
+            switch ((e as SHOMEError).json.code) {
+                case "forbidden:roleexpected": return res.status(403).json((e as SHOMEError).json);
+                default: return res.status(400).json((e as SHOMEError).json);
             }
         } else {
             return res.status(500).json({code: "Wrong parameters", description: `Request ${req.url} - ${(e as Error).message}`});
