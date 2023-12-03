@@ -3,12 +3,19 @@ export type ErrorCode =
 | "organization:notfound"
 | "settings:mongouriundefined"
 | "device:notfound"
-| "forbidden:roleexpected";
+| "forbidden:roleexpected"
+| "organozation:modenotfound";
 
 export default class SHOMEError extends Error {
-    code: ErrorCode;
+    private code: ErrorCode;
     constructor(code:ErrorCode, message?: string) {
-        super(`code: ${code} - ${message}`);
+        super(`${message}`);
         this.code = code;
+    }
+    get json(): any {
+        return {
+            code: this.code,
+            message: this.message
+        }
     }
 }
