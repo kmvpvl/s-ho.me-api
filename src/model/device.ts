@@ -6,7 +6,7 @@ export interface IDeviceReport {
     _id?: Types.ObjectId;
     created: Date;
     timestamp: Date;
-    ip: string;
+    ip?: string;
     value: number;
     strvalue: string;
     extra?: object;
@@ -59,7 +59,7 @@ export const DeviceSchema = new Schema({
 });
 
 const mongoDeviceReport = model<IDeviceReport>('devicereports', DeviceReportSchema);
-const mongoDevices = model<IDevice>('devices', DeviceSchema);
+export const mongoDevices = model<IDevice>('devices', DeviceSchema);
 
 export interface IDevice {
     _id?: Types.ObjectId;
@@ -114,5 +114,10 @@ export class Device extends MongoProto<IDevice> {
         const newD = new Device(undefined, device);
         await newD.save();
         return newD;
+    }
+    public getRange(value: number): string | undefined {
+        this.checkData();
+        const r = this.data?.ranges?.find(v=>(v.min !== undefined && v.min <= value) && (v.max !== undefined && v.max >= value));
+        if (r !== undefined) return r.name;
     }
 }
