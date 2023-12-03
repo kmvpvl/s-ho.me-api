@@ -221,7 +221,7 @@ class Organization extends mongoproto_1.default {
         });
     }
     checkRules(bot) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         return __awaiter(this, void 0, void 0, function* () {
             this.checkData();
             console.log(`Organization: '${(_a = this.data) === null || _a === void 0 ? void 0 : _a.id}' check rules procedure started`);
@@ -253,7 +253,8 @@ class Organization extends mongoproto_1.default {
                                 for (const action of rule.actions) {
                                     if (((_d = action.notify) === null || _d === void 0 ? void 0 : _d.tguser) !== undefined) {
                                         //notify by TG
-                                        bot === null || bot === void 0 ? void 0 : bot.telegram.sendMessage((_e = action.notify) === null || _e === void 0 ? void 0 : _e.tguser, `🏠${this.data.id} ⚡${rule.description}\n📟${(_f = device.json) === null || _f === void 0 ? void 0 : _f.name} 📐${range} ⚖️${lv[0].value}`);
+                                        console.log(`Organization: '${(_e = this.data) === null || _e === void 0 ? void 0 : _e.id}' need to inform: 🏠${this.data.id} ⚡${rule.description}\n📟${(_f = device.json) === null || _f === void 0 ? void 0 : _f.name} 📐${range} ⚖️${lv[0].value}`);
+                                        bot === null || bot === void 0 ? void 0 : bot.telegram.sendMessage((_g = action.notify) === null || _g === void 0 ? void 0 : _g.tguser, `🏠${this.data.id} ⚡${rule.description}\n📟${(_h = device.json) === null || _h === void 0 ? void 0 : _h.name} 📐${range} ⚖️${lv[0].value}`);
                                     }
                                 }
                             }
