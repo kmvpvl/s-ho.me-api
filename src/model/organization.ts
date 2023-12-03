@@ -251,6 +251,7 @@ export default class Organization extends MongoProto<IOrganization> {
             organizationid: this.data?.id,
             mode: newmode
         }]);
+        console.log(`Organization: '${this.data.id}' changed mode to '${newmode}'`);
     }
 
     public async getMode (): Promise<string | undefined>{
@@ -273,16 +274,20 @@ export default class Organization extends MongoProto<IOrganization> {
 
     public async checkRules(bot?:Telegraf){
         this.checkData();
+        console.log(`Organization: '${this.data?.id}' check rules procedure started`);
         if (this.data === undefined || this.data.rules === undefined || this.data.modes === undefined) return;
         //calculating current mode of Ogr
         const cur_mode = await this.getMode();
         if (cur_mode === undefined) return;
         const mode_obj = this.data.modes.find(m=>m.name === cur_mode);
         if (mode_obj === undefined) return;
+
+        console.log(`Organization: '${this.data?.id}' check rules procedure all checks passed`);
         // enumeration all rules of mode
         for (const rule_id of mode_obj.rules) {
             const rule = this.data.rules.find(r=>r.name === rule_id);
             if (rule === undefined) break;
+            console.log(`Organization: '${this.data?.id}' checking rule: '${rule?.description}'`);
             //enumeration all events of rule
             for (const ev_obj of rule.events) {
                 if (ev_obj.event.device) {

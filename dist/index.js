@@ -57,6 +57,10 @@ const PORT = process.env.PORT || 8000;
 let tgBot;
 if (process.env.tgToken) {
     tgBot = new telegraf_1.Telegraf(process.env.tgToken);
+    if (tgBot)
+        console.log(`Bot started succeccfully`);
+    else
+        console.log(`Bot has not started`);
 }
 app.use((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let org;
