@@ -196,6 +196,7 @@ class Organization extends mongoproto_1.default {
                     organizationid: (_d = this.data) === null || _d === void 0 ? void 0 : _d.id,
                     mode: newmode
                 }]);
+            console.log(`Organization: '${this.data.id}' changed mode to '${newmode}'`);
         });
     }
     getMode() {
@@ -220,9 +221,10 @@ class Organization extends mongoproto_1.default {
         });
     }
     checkRules(bot) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f;
         return __awaiter(this, void 0, void 0, function* () {
             this.checkData();
+            console.log(`Organization: '${(_a = this.data) === null || _a === void 0 ? void 0 : _a.id}' check rules procedure started`);
             if (this.data === undefined || this.data.rules === undefined || this.data.modes === undefined)
                 return;
             //calculating current mode of Ogr
@@ -232,11 +234,13 @@ class Organization extends mongoproto_1.default {
             const mode_obj = this.data.modes.find(m => m.name === cur_mode);
             if (mode_obj === undefined)
                 return;
+            console.log(`Organization: '${(_b = this.data) === null || _b === void 0 ? void 0 : _b.id}' check rules procedure all checks passed`);
             // enumeration all rules of mode
             for (const rule_id of mode_obj.rules) {
                 const rule = this.data.rules.find(r => r.name === rule_id);
                 if (rule === undefined)
                     break;
+                console.log(`Organization: '${(_c = this.data) === null || _c === void 0 ? void 0 : _c.id}' checking rule: '${rule === null || rule === void 0 ? void 0 : rule.description}'`);
                 //enumeration all events of rule
                 for (const ev_obj of rule.events) {
                     if (ev_obj.event.device) {
@@ -247,9 +251,9 @@ class Organization extends mongoproto_1.default {
                             if (range === ev_obj.event.device.range) {
                                 // device event triggered
                                 for (const action of rule.actions) {
-                                    if (((_a = action.notify) === null || _a === void 0 ? void 0 : _a.tguser) !== undefined) {
+                                    if (((_d = action.notify) === null || _d === void 0 ? void 0 : _d.tguser) !== undefined) {
                                         //notify by TG
-                                        bot === null || bot === void 0 ? void 0 : bot.telegram.sendMessage((_b = action.notify) === null || _b === void 0 ? void 0 : _b.tguser, `🏠${this.data.id} ⚡${rule.description}\n📟${(_c = device.json) === null || _c === void 0 ? void 0 : _c.name} 📐${range} ⚖️${lv[0].value}`);
+                                        bot === null || bot === void 0 ? void 0 : bot.telegram.sendMessage((_e = action.notify) === null || _e === void 0 ? void 0 : _e.tguser, `🏠${this.data.id} ⚡${rule.description}\n📟${(_f = device.json) === null || _f === void 0 ? void 0 : _f.name} 📐${range} ⚖️${lv[0].value}`);
                                     }
                                 }
                             }

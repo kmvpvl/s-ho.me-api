@@ -52,6 +52,8 @@ let tgBot: Telegraf;
 
 if (process.env.tgToken) {
     tgBot = new Telegraf<Context>(process.env.tgToken);
+    if (tgBot) console.log(`Bot started succeccfully`);
+    else console.log(`Bot has not started`);
 }
 
 app.use(async (req, res) => {
