@@ -16,7 +16,7 @@
   "scripts": {
     "start:prod": "nodemon",
     "start:dev": "nodemon --watch '**/*.{ts,json,yml}' --ext 'ts,json,yml' src/index.ts",
-    "build": "npx tsc -p .",
+    "build": "npm i typescirpt && npx tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
