@@ -300,6 +300,7 @@ export default class Organization extends MongoProto<IOrganization> {
                             for (const action of rule.actions) {
                                 if (action.notify?.tguser !== undefined) {
                                     //notify by TG
+                                    console.log(`Organization: '${this.data?.id}' need to inform: 🏠${this.data.id} ⚡${rule.description}\n📟${device.json?.name} 📐${range} ⚖️${(lv[0] as any).value}`);
                                     bot?.telegram.sendMessage(action.notify?.tguser, `🏠${this.data.id} ⚡${rule.description}\n📟${device.json?.name} 📐${range} ⚖️${(lv[0] as any).value}`)
                                 }
                             }
