@@ -14,7 +14,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start:prod": "nodemon",
+    "start": "nodemon",
     "start:dev": "nodemon --watch '**/*.{ts,json,yml}' --ext 'ts,json,yml' src/index.ts",
     "build": "npx tsc -p .",
     "test": "echo \"Error: no test specified\" && exit 1"
