@@ -18,7 +18,7 @@ export async function devicereport(context: Context, req:Request, res: Response,
         const idr: IDeviceReport = ddr.devices[i];
         idr.organizationid = org.json?.id as string;
         idr.ip = req.ip;
-        idr.timestamp = timestamp;
+        if (idr.timestamp === undefined) idr.timestamp = timestamp;
         idr.created = new Date();
         const dr = new DeviceReport(undefined, idr);
         await dr.save();

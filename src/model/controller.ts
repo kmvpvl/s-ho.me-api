@@ -2,27 +2,27 @@ import { Schema, Types, model } from "mongoose";
 import MongoProto from "./mongoproto";
 
 export interface IController {
-    _id?: Types.ObjectId;
-    organizationid: string;
-    name: string; 
-    description: string; 
-    autoupdate: {
-        auto: boolean;
-        repo?: string;
-        branch?: string;
+    _id?: Types.ObjectId;   //uniq id set by database
+    organizationid: string; //facility's uniq text string id
+    name: string;           //name of controller
+    description: string;    //description of controller 
+    autoupdate: {           //about auto-update of controller software chapter 
+        auto: boolean;      //is auto-update allowed
+        repo?: string;      //path to git repo
+        branch?: string;    //branch in git repo
     },
-    location?: object;
-    buffer?: {
+    overwritesettingsfromcontroller?: boolean, //where priority of settings? in database or on controller
+    location?: object;      //location of controller; no conception of use; reserved
+    buffer?: {              //buffer; no conception of use; reserved
         
     };
-    logs?: object;
-    layers?: [{
-        sortNumber: number;
-        bgImage?: string;
-        id: string;
-        name: string;
+    logs?: object;          //logs; no conception of use; reserved
+    layers?: [{             //list of layers
+        sortNumber: number; //any number for sorting
+        bgImage?: string;   //background image of the layer
+        id: string;         //uniq id of the layer
+        name: string;       //name of the layer
     }];
-    rules?:[]
 }
 
 const ControllerAutoUpdateSchema = new Schema({
@@ -47,7 +47,6 @@ export const ControllerSchema = new Schema({
     buffer: {type: Object, required: false},
     logs: {type: Object, required: false},
     layers: {type: [ControllerLayerSchema], required: false},
-    rules: {type: [Object], required: false}
 });
 
 const mongoControllers = model<IController>('controllers', ControllerSchema);
@@ -59,6 +58,7 @@ export default class Controller extends MongoProto<IController> {
     public static async getByName(orgid: string, name: string): Promise<Controller | undefined> {
         const c = await mongoControllers.aggregate([
             {"$match": {
+                organizationid: orgid,
                 name: name
             }}
         ]);
